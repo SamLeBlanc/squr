@@ -1,25 +1,8 @@
-orient = 1
-active_square = [0,0]
-
-
-const create_rows_and_cols = () => {
-  ['row','col'].forEach( z => {
-    const gameBoard = document.getElementById(`board-${z}s`);
-    for (let index = 0; index < 5; index++) {
-      let div = document.createElement("div");
-      div.classList.add(z);
-      div.setAttribute("id", `${z}-${index}`);
-      gameBoard.appendChild(div);
-    }
-  })
-}
-
 const create_squares = () => {
   const gameBoardL = document.getElementById("board-letters");
   for (let row_index = 0; row_index < 5; row_index++) {
     let row = document.createElement("div");
-    row.classList.add("row2");
-    row.setAttribute("id", `letter-holder-${row_index}`);
+    row.classList.add("board-row");
     gameBoardL.appendChild(row);
     for (let index = 0; index < 5; index++) {
       let square = document.createElement("div");
@@ -30,34 +13,31 @@ const create_squares = () => {
   }
 }
 
-function disableScroll() {
-    // Get the current page scroll position
+const disableScroll = () => {
     scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
-
-        // if any scroll is attempted, set this to the previous value
-        window.onscroll = function() {
-            window.scrollTo(scrollLeft, scrollTop);
-        };
+    window.onscroll = function() {
+        window.scrollTo(scrollLeft, scrollTop);
+    };
 }
 
-const highlight_active_square = () => {
+const format_board_text = () => {
+  // Set font size for filled and empty squares
   for (let i = 0; i < 25; i++) {
-    $(`#sq-${i}`).css('color','white').css('font-size','6px')
-    if ($(`#sq-${i}`).text() != '●'){
-      $(`#sq-${i}`).css('font-size','45px')
-    }
-
+    font_size = $(`#sq-${i}`).text() != '●' ? '45px' : '8px';
+    $(`#sq-${i}`).css('color','white').css('font-size',font_size)
   }
+
+  // Color active square differently than the board
   sq_num = active_square[1]*5 + active_square[0]
   $(`#sq-${sq_num}`).css('color','gold')
+
+  // If empty, make active square a large gold dot
   if ($(`#sq-${sq_num}`).text() == '●'){
     $(`#sq-${sq_num}`).css('font-size','26px')
   }
 
-}
-
-const color_locked_squares = () => {
+  // Set color of locked squares
   for (let i = 0; i < 25; i++) {
     if (locked.substring(i,i+1) != '●'){
       $(`#sq-${i}`).css('color','green')
@@ -68,22 +48,6 @@ const color_locked_squares = () => {
 const initial_dots = () => {
   for (let i = 0; i < 25; i++) {
     $(`#sq-${i}`).text('●').css('color','white')
-  }
-}
-
-const fill_dots = () => {
-  for (let i = 0; i < 25; i++) {
-    $(`#sq-${i}`).css('color','white')
-  }
-}
-
-const color_active_word = () => {
-  for (let i = 0; i < 25; i++) {
-    $(`#sq-${i}`).css('color','white')
-  }
-  for (let i = 0; i < 5; i++) {
-    sq = orient == 0 ? active_square[0] + 5*i : active_square[1]*5 + i
-    $(`#sq-${sq}`).css('color','white')
   }
 }
 
@@ -177,8 +141,9 @@ const delete_letter = () => {
         active_square[orient] = (4+active_square[orient])%5
       }
   }
-
-  $(`#sq-${sq}`).text("●")
+  if (locked.substring(sq_num,sq_num+1) == '●'){
+    $(`#sq-${sq}`).text("●")
+  }
   update()
 }
 
@@ -188,7 +153,12 @@ const set_clue_text = () => {
 }
 
 const enter_key = () => {
-  active_square[orient] = (active_square[orient]+1) % 5
+  if (active_square[orient] == 4){
+    active_square[(orient+1)%2] = 0
+    full_rotate()
+  } else {
+    active_square[orient] = (active_square[orient]+1) % 5
+  }
   active_square[(orient+1)%2] = 0
   update()
 }
@@ -210,19 +180,15 @@ const remove_wrong_answers = () => {
 }
 
 const shake_board = () => {
-  var board = document.querySelector('#board-container');
+  let board = document.querySelector('#board');
   board.animate([
-      // keyframes
       { transform: 'translate(3px, 0px)' },
       { transform: 'translate(-6px, 0px)'},
       { transform: 'translate(6px, 0px)' },
       { transform: 'translate(-6px, 0px)'},
       { transform: 'translate(6px, 0px)' },
       { transform: 'translate(-3px, 0px)'},
-    ], {
-      // timing options
-      duration: 250,
-    });
+    ], { duration: 250 });
 }
 
 const move_left = () =>  { active_square[0] = (active_square[0]+4) % 5; update(); }
@@ -234,7 +200,7 @@ const move_with_keys = e => {
   if(e.keyCode == 37) move_left()
   if(e.keyCode == 38) move_up()
   if(e.keyCode == 39) move_down()
-  if(e.keyCode == 40) move_down()
+  if(e.keyCode == 40) move_right()
   if(e.keyCode == 8)  delete_letter() // backspace
   if(e.keyCode == 13) enter_key()
 }
@@ -243,7 +209,7 @@ const adjust_icon_size = () => {
   key_width = parseInt($('.keyboard-row button').css('width').substring(0,2))
   key_height = parseInt($('.keyboard-row button').css('height').substring(0,2))
 
-  icon_size = Math.min(0.7*key_width,24)
+  icon_size = Math.min(0.6*key_width,24)
   $('img').css('width', icon_size).css('height', icon_size)
 }
 
@@ -304,47 +270,38 @@ const check_answer = () => {
 
 const initial_triangles = () => {
   board_width = Math.min(window.innerWidth*.625, 400)
-
-  starting_margin = parseInt($('#triangle-left').css('margin-left'))
-  $('#triangle-left').css('margin-left',starting_margin+board_width/2)
-
-  starting_margin = parseInt($('#triangle-right').css('margin-left'))
-  $('#triangle-right').css('margin-left',starting_margin-board_width/2)
-
-  starting_margin = parseInt($('#triangle-up').css('margin-top'))
-  $('#triangle-up').css('margin-top',starting_margin+board_width/2)
-
-  starting_margin = parseInt($('#triangle-down').css('margin-top'))
-  $('#triangle-down').css('margin-top',starting_margin-board_width/2)
+  starting_margin = parseInt($('#tri-left').css('margin-left'))
+  $('#tri-left').css('margin-left',starting_margin+board_width/2)
+  starting_margin = parseInt($('#tri-right').css('margin-left'))
+  $('#tri-right').css('margin-left',starting_margin-board_width/2)
+  starting_margin = parseInt($('#tri-up').css('margin-top'))
+  $('#tri-up').css('margin-top',starting_margin+board_width/2)
+  starting_margin = parseInt($('#tri-down').css('margin-top'))
+  $('#tri-down').css('margin-top',starting_margin-board_width/2)
 }
 
 const move_triangles = () => {
   sqaure_size = Math.min(.25 * window.innerWidth, 160)
   color = get_current_answers() == solution ? 'green' : 'gold'
   if (orient == 0){
-    $('#triangle-left').css('border-right','11px solid transparent')
-    $('#triangle-right').css('border-left','11px solid transparent')
-    $('#triangle-up').css('border-bottom','11px solid ' + color)
-    $('#triangle-down').css('border-top','11px solid ' + color)
-    $('#triangles-col').css('margin-left',`${sqaure_size*(active_square[0]-2)}px`)
-    // $('#triangles-row').css('margin-top',`${128*(active_square[0]-2)}px`)
+    $('#tri-left').css('border-right','11px solid transparent')
+    $('#tri-right').css('border-left','11px solid transparent')
+    $('#tri-up').css('border-bottom','11px solid ' + color)
+    $('#tri-down').css('border-top','11px solid ' + color)
+    $('#tri-col').css('margin-left',`${sqaure_size*(active_square[0]-2)}px`)
   } else {
-    $('#triangle-up').css('border-bottom','11px solid transparent')
-    $('#triangle-down').css('border-top','11px solid transparent')
-    $('#triangle-left').css('border-right','11px solid ' + color)
-    $('#triangle-right').css('border-left','11px solid ' + color)
-    $('#triangles-row').css('margin-top',`${sqaure_size*(active_square[1]-2)}px`)
-    // $('#triangles-col').css('margin-left',`${128*(active_square[1]-2)}px`)
+    $('#tri-up').css('border-bottom','11px solid transparent')
+    $('#tri-down').css('border-top','11px solid transparent')
+    $('#tri-left').css('border-right','11px solid ' + color)
+    $('#tri-right').css('border-left','11px solid ' + color)
+    $('#tri-row').css('margin-top',`${sqaure_size*(active_square[1]-2)}px`)
   }
-
 }
 
 const setup = () => {
   disableScroll()
-  create_rows_and_cols();
-  create_squares();
+  create_squares()
   initial_dots()
-  fill_dots()
   keyboard_setup()
   setup_sqaure_click()
   adjust_icon_size()
@@ -353,12 +310,10 @@ const setup = () => {
 }
 
 const update = () => {
-  highlight_active_square()
+  format_board_text()
   move_triangles()
   set_clue_text()
   check_answer()
-  color_locked_squares()
-
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -384,12 +339,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   if (window.innerWidth < 400){
-  $('#title').css('font-size','18px')
-    $('#theme').css('font-size','18px')
-    $('#clue-box').css('font-size','18px')
-    $(".keyboard-row button").css('flex-grow','0').css('width','25px')
+    $(".keyboard-row button.wide-button") .css('flex-grow','0').css('width',1.5*(1+$('#q').width()))
 }
-
 
   $( "body" ).keydown(function(e) {
     if((e.keyCode >= 65 && e.keyCode <= 90)||(e.keyCode >= 97 && e.keyCode <= 122)){
@@ -398,20 +349,19 @@ document.addEventListener("DOMContentLoaded", () => {
       }
   });
 
-   solution = "ORBITCHEMOCOLONUNIFYREEFS"
+   solution = "ONENDRUMORDROVEESTESREELS"
    locked = "●●●●●●●●●●●●●●●●●●●●●●●●●"
 
-
-  clues = [['Happen',
-      'River in France and Switzerland',
-      'Contradict',
-      '5 p.m. phrase, for some',
-      'Awards on Broadway'],
-      ["Elliptic curve in space",
-      "Cancer treat.",
-      'Large intestine',
-      'Bring together',
-      'Victims of ocean acidification']
+  clues = [["Restaurant serving",
+      "One taking vitals",
+      'Video game gesture',
+      'Long form narrative fiction',
+      'Code at a party'],
+      ["Upright",
+      'Highschool hearsay',
+      'Teed off',
+      '_____ Park, Colorado',
+      'Knockoff Instagram feature ']
       ]
 
   setup()

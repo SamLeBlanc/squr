@@ -53,27 +53,13 @@ body {
   padding-top: 3px;
 }
 
-#board-container {
+#board {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-grow: 1;
   overflow: hidden;
   margin-top: -20px;
-}
-
-#board-rows {
-  display: grid;
-  box-sizing: border-box;
-  position: fixed;
-}
-
-#board-cols {
-  display: grid;
-  box-sizing: border-box;
-  grid-template-columns: repeat(5, 1fr);
-  position: fixed;
-
 }
 
 #board-letters{
@@ -83,65 +69,61 @@ body {
   z-index: 1;
 }
 
-#triangle-down {
+#tri-down {
   width: 0;
   height: 0;
-  margin-left: -6px;
-  margin-top: -11px;
+  margin-left: -9px;
+  margin-top: -13px;
   position: fixed;
-  border-left: 7px solid transparent;
-  border-right: 7px solid transparent;
-  border-top: 11px solid gold;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-top: 13px solid gold;
 }
 
-#triangle-left {
+#tri-left {
   width: 0;
   height: 0;
   margin-left: 1px;
-  margin-top: -6px;
+  margin-top: -10px;
   position: fixed;
-  border-top: 7px solid transparent;
-  border-right: 11px solid gold;
-  border-bottom: 7px solid transparent;
+  border-top: 9px solid transparent;
+  border-right: 13px solid gold;
+  border-bottom: 9px solid transparent;
 }
 
-#triangle-up {
+#tri-up {
   width: 0;
   height: 0;
-  margin-left: -6px;
+  margin-left: -9px;
   margin-top: 1px;
   position: fixed;
-  border-left: 7px solid transparent;
-  border-right: 7px solid transparent;
-  border-bottom: 11px solid gold;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-bottom: 13px solid gold;
 }
 
-#triangle-right {
+#tri-right {
   width: 0;
   height: 0;
-  margin-left: -11px;
-  margin-top: -6px;
+  margin-left: -13px;
+  margin-top: -10px;
   position: fixed;
-  border-top: 7px solid transparent;
-  border-left: 11px solid gold;
-  border-bottom: 7px solid transparent;
+  border-top: 9px solid transparent;
+  border-left: 13px solid gold;
+  border-bottom: 9px solid transparent;
 }
 
 #clue-box{
-  width: 55%;
-  margin: 0 auto;
+  width: 66%;
   height: 32px;
   min-width: min(55vw,400px);
-  background: transparent;
-  /* border: 2px white solid; */
   bottom: 180px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size:25px;
+  font-size:min(6vw,26px);
   text-align: center;
   color: white;
-  border-radius: 10px;
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
@@ -161,71 +143,33 @@ body {
   z-index:10;
 }
 
-
-.dot{
-  width: 10px;
-  height: 10px;
-  background: green;
-  text-transform: uppercase;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index:10;
-}
-
-.row{
-  /* border: 2px solid #666; */
+.board-row{
   width: min(62.5vw,400px);
   height: min(12.5vw,80px);
   font-size: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
-  /* margin: -1px; */
-}
-
-.row2{
-  /* border: 2px solid #666; */
-  width: min(62.5vw,400px);
-  height: min(12.5vw,80px);
-  font-size: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  /* margin: -1px; */
-}
-
-.col{
-  /* border: 2px solid #666; */
-  width: min(12.5vw,80px);
-  height: min(62.5vw,400px);
-  font-size: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  /* margin: -1px; */
-
 }
 
 
-#keyboard-container {
-  padding-left: 6px;
+#keyboard {
 }
 
 .keyboard-row {
   display: flex;
   justify-content: center;
   width: 100%;
-  margin: 0 auto 8px;
+  margin: 0px 0px 8px 0px;
   touch-action: manipulation;
 }
 
 img {
-position: fixed;
-z-index: 10;
-align-items: center;
-justify-content: center;
-display: flex;
+  position: fixed;
+  z-index: 10;
+  align-items: center;
+  justify-content: center;
+  display: flex;
 }
 
 .keyboard-icon{
@@ -242,12 +186,10 @@ display: flex;
   cursor: pointer;
   border: 1px solid white;
   background-color: transparent;
-  color: rgb(215, 218, 220);
-  flex-grow: 1;
+  color: white;
   text-transform: uppercase;
   margin-right: 6px;
   border-radius: 4px;
-  user-select: none;
   font-size: 21px;
   width:30px;
   align-items: center;
@@ -256,33 +198,10 @@ display: flex;
   z-index:5;
 }
 
-.keyboard-row spacer {
-  flex-grow: 0.75;
-  width: 30px;
-  border: none;
-  color: black;
-}
-
 .keyboard-row button.wide-button {
   flex-grow: 1.5;
 }
 
-.keyboard-row button.ultrawide-button {
-  flex-grow: 2.5;
-}
-
-.spacer-one {
-  flex-grow: 1.78;
-}
-
-.spacer-two {
-  flex-grow: 3.56;
-}
-
 .spacer-three {
   flex-grow: 0.92;
-}
-
-.spacer-four {
-  width: 10px;
 }
