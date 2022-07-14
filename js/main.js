@@ -51,34 +51,25 @@ const initial_dots = () => {
   }
 }
 
-const get_word_square_numbers = () => {
+const get_sq_nums_in_word = () => {
   sq_num = active_square[1]*5 + active_square[0]
-  let nums_in_word = []
-  if (orient ==1 ){
-      start = Math.floor(sq_num/5)*5
-      nums_in_word = [start,start+1,start+2,start+3,start+4]
-  } else {
-      start = sq_num%5
-      nums_in_word = [start,start+5,start+10,start+15,start+20]
-  }
-  return nums_in_word
+  start = orient == 0 ? sq_num%5 : Math.floor(sq_num/5)*5
+  step = orient == 0 ? 5 : 1
+  sq_nums_in_word = [start,start+(1*step),start+(2*step),start+(3*step),start+(4*step)]
+  return sq_nums_in_word
 }
 
 const is_current_word_full = () => {
-  f = filled_squares()
-  w = get_word_square_numbers()
-  return w.every(elem => f.includes(elem));
+  return get_sq_nums_in_word().every(elem => get_filled_sqaures().includes(elem));
 }
 
 const is_current_word_empty = () => {
-  f = filled_squares()
-  w = get_word_square_numbers()
-  return !w.some(elem => f.includes(elem));
+  return !get_sq_nums_in_word().some(elem => get_filled_sqaures().includes(elem));
 }
 
 const move_to_next_square = () => {
   if (((orient==1 && active_square[0] == 4) ||
-  (orient==0 && active_square[1] == 4)) && word_finished()){
+  (orient==0 && active_square[1] == 4)) && is_current_word_full()){
     active_square[0] = (active_square[0]+1) % 5
     active_square[1] = (active_square[1]+1) % 5
   } else if (orient == 1){
@@ -103,7 +94,7 @@ const set_letter = letter => {
   update()
 }
 
-const filled_squares = () => {
+const get_filled_sqaures = () => {
   filled = []
   for (let i = 0; i < 25; i++) {
     if ($(`#sq-${i}`).text() != "●"){
@@ -113,25 +104,10 @@ const filled_squares = () => {
   return filled
 }
 
-const word_finished = () => {
-  finished = true
-  filled = filled_squares()
-  for (let i = 0; i < 5; i++) {
-    sq = orient == 0 ? active_square[0] + 5*i : active_square[1]*5 + i
-    if (!filled.includes(sq)){
-      finished = false
-    }
-  }
-  return finished
-  }
-
-
-const full_rotate = () => {
+const rotate_orient = () => {
   orient = (orient+1) % 2
   update()
 }
-
-
 
 const delete_letter = () => {
   sq = active_square[1]*5 + active_square[0]
@@ -155,7 +131,7 @@ const set_clue_text = () => {
 const enter_key = () => {
   if (active_square[orient] == 4){
     active_square[(orient+1)%2] = 0
-    full_rotate()
+    rotate_orient()
   } else {
     active_square[orient] = (active_square[orient]+1) % 5
   }
@@ -165,17 +141,15 @@ const enter_key = () => {
 
 const remove_wrong_answers = () => {
   shake_board()
-  nums = [...Array(25).keys()]
   locked = ''
-  nums.forEach(n => {
-    if (solution.substring(n,n+1) != $(`#sq-${n}`).text()){
-      $(`#sq-${n}`).text("●")
+  for (let i = 0; i < 25; i++) {
+    if (solution.substring(i,i+1) != $(`#sq-${i}`).text()){
+      $(`#sq-${i}`).text("●")
       locked += '●'
     } else {
-      locked += $(`#sq-${n}`).text()
+      locked += $(`#sq-${i}`).text()
     }
-
-  })
+  }
   update()
 }
 
@@ -195,6 +169,13 @@ const move_left = () =>  { active_square[0] = (active_square[0]+4) % 5; update()
 const move_up = () =>    { active_square[1] = (active_square[1]+4) % 5; update(); }
 const move_down = () =>  { active_square[0] = (active_square[0]+1) % 5; update(); }
 const move_right = () => { active_square[1] = (active_square[1]+1) % 5; update(); }
+const move_to_word_start = () => { active_square[(orient+1)%2] = 0; update() }
+const move_to_next_word = () => {
+  active_square[orient] = (active_square[orient]+1)%5
+  move_to_word_start()
+  if (active_square[orient] == 0) orient = (orient+1)%2
+  update()
+}
 
 const move_with_keys = e => {
   if(e.keyCode == 37) move_left()
@@ -205,66 +186,34 @@ const move_with_keys = e => {
   if(e.keyCode == 13) enter_key()
 }
 
-const adjust_icon_size = () => {
-  key_width = parseInt($('.keyboard-row button').css('width').substring(0,2))
-  key_height = parseInt($('.keyboard-row button').css('height').substring(0,2))
-
-  icon_size = Math.min(0.6*key_width,24)
-  $('img').css('width', icon_size).css('height', icon_size)
-}
-
-
 const keyboard_setup = () => {
   const keys = document.querySelectorAll(".keyboard-row button");
   for (let i = 0; i < keys.length; i++) {
     keys[i].onclick = ({ target }) => {
       const letter = target.getAttribute("data-key").toUpperCase();
-      if (letter == "DEL") {
-        delete_letter()
-      } else if (letter == "ROTATE") {
-        full_rotate()
-      } else if (letter == 'CHECK'){
-        remove_wrong_answers()
-      }
-      else if (letter == 'ENTER'){
-        enter_key()
-      } else if (letter == '*'){
-
-      }
-      else {
-        set_letter(letter)
-      }
+      if (letter == "ROTATE")     rotate_orient()
+      else if (letter == "DEL")   delete_letter()
+      else if (letter == 'CHECK') remove_wrong_answers()
+      else if (letter == 'ENTER') enter_key()
+      else if (letter == '*') false
+      else set_letter(letter)
     }
   }
 }
 
 const get_current_answers = () => {
   string = ''
-  nums = [...Array(25).keys()]
-  nums.forEach( n => {
-    string += ($(`#sq-${n}`).text())
-  })
+  for (let i = 0; i < 25; i++) {
+    string += ($(`#sq-${i}`).text())
+  }
   return string
-}
-
-const setup_sqaure_click = () => {
-  [...Array(25).keys()].forEach(n => {
-    $(`#sq-${n}`).click(() => {
-      active_square = [n%5,Math.floor(n/5)]
-      update()
-    })
-    $(`#sq-${n}`).dblclick(() => {
-      full_rotate()
-    })
-
-  })
 }
 
 const check_answer = () => {
   if (get_current_answers() == solution){
-    [...Array(25).keys()].forEach(n => {
+    for (let i = 0; i < 25; i++) {
       $(`#sq-${n}`).css('color','green').css('font-weight','bold')
-    })
+    }
   }
 }
 
@@ -334,7 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   $( "body" ).keydown(function(e) {
     if(e.keyCode == 32){
-        full_rotate()
+        rotate_orient()
       }
   });
 
