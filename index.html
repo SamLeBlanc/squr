@@ -3,16 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>▸ schwer ◂</title>
+    <title>▸ schwerdle ◂</title>
     <script src="js/main.js"></script>
     <script src="js/setup.js"></script>
+    <script src="js/full_words.js"></script>
     <link rel="stylesheet" href="css/styles.css" />
     <script src="assets/jquery/jquery-3.5.1.min.js"></script>
   </head>
   <body>
     <div id="container">
       <div id='header'>
-        <div id="title">schwer 26</div>
+        <div id="title">schwerdle 30</div>
         <div id="theme">Friday</div>
       </div>
       <div id="game">
@@ -28,10 +29,6 @@
               </div>
         </div>
 
-        <div id='clue-box'>
-          <div id='clue'>
-          </div>
-        </div>
         <div id="keyboard">
           <div class="keyboard-row" style='margin-bottom: 30px;'>
             <button data-key="check" class="wide-button">
@@ -44,38 +41,38 @@
           </div>
           <div class="keyboard-row">
             <button data-key="q" id='q' >q</button>
-            <button data-key="w">w</button>
-            <button data-key="e">e</button>
-            <button data-key="r">r</button>
-            <button data-key="t">t</button>
-            <button data-key="y">y</button>
-            <button data-key="u">u</button>
-            <button data-key="i">i</button>
-            <button data-key="o">o</button>
-            <button data-key="p">p</button>
+            <button data-key="w" id='w'>w</button>
+            <button data-key="e" id='e'>e</button>
+            <button data-key="r" id='r'>r</button>
+            <button data-key="t" id='t'>t</button>
+            <button data-key="y" id='y'>y</button>
+            <button data-key="u" id='u'>u</button>
+            <button data-key="i" id='i'>i</button>
+            <button data-key="o" id='o'>o</button>
+            <button data-key="p" id='p'>p</button>
           </div>
           <div class="keyboard-row">
-            <button data-key="a">a</button>
-            <button data-key="s">s</button>
-            <button data-key="d">d</button>
-            <button data-key="f">f</button>
-            <button data-key="g">g</button>
-            <button data-key="h">h</button>
-            <button data-key="j">j</button>
-            <button data-key="k">k</button>
-            <button data-key="l">l</button>
+            <button data-key="a" id='a'>a</button>
+            <button data-key="s" id='s'>s</button>
+            <button data-key="d" id='d'>d</button>
+            <button data-key="f" id='f'>f</button>
+            <button data-key="g" id='g'>g</button>
+            <button data-key="h" id='h'>h</button>
+            <button data-key="j" id='j'>j</button>
+            <button data-key="k" id='k'>k</button>
+            <button data-key="l" id='l'>l</button>
           </div>
           <div class="keyboard-row">
             <button data-key="DEL" class="wide-button">
               <img src="assets/backspace.png"  class='keyboard-icon'>
             </button>
-            <button data-key="z">z</button>
-            <button data-key="x">x</button>
-            <button data-key="c">c</button>
-            <button data-key="v">v</button>
-            <button data-key="b">b</button>
-            <button data-key="n">n</button>
-            <button data-key="m">m</button>
+            <button data-key="z" id='z'>z</button>
+            <button data-key="x" id='x'>x</button>
+            <button data-key="c" id='c'>c</button>
+            <button data-key="v" id='v'>v</button>
+            <button data-key="b" id='b'>b</button>
+            <button data-key="n" id='n'>n</button>
+            <button data-key="m" id='m'>m</button>
             <button data-key="ENTER" class="wide-button" >
               <img src="assets/enter.png" class='keyboard-icon'>
             </button>
