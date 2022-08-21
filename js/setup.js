@@ -67,7 +67,3 @@ const disableScroll = () => {
         window.scrollTo(scrollLeft, scrollTop);
     };
 }
-
-if (window.innerWidth < 400){
-  $(".keyboard-row button.wide-button") .css('flex-grow','0').css('width',1.5*(1+$('#q').width()))
-}
