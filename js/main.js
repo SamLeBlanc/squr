@@ -6,6 +6,17 @@ const format_board_text = () => {
     $(`#sq-${i}`).css('color','white').css('font-size',font_size)
   }
 
+<<<<<<< HEAD
+=======
+  // Color active square differently than the board
+  $(`#sq-${active_sq_num()}`).css('color','gold')
+
+  // If empty, active square empty, make dot larger than others
+  if ($(`#sq-${active_sq_num()}`).text() == '●'){
+    $(`#sq-${active_sq_num()}`).css('font-size','26px')
+  }
+
+>>>>>>> f3642421974a4179178886e437661afa632eaf16
   // Set color of locked squares
   for (let i = 0; i < 25; i++) {
     if (locked.substring(i,i+1) != '●'){
@@ -50,6 +61,7 @@ const rotate_orient = () => {
   orient = (orient+1) % 2
   update()
 }
+<<<<<<< HEAD
 
 const get_filled_sqaures = () => {
   // Returns array of all non-empty square numbers
@@ -147,19 +159,113 @@ const move_triangles = () => {
   }
 }
 
+=======
+
+const get_filled_sqaures = () => {
+  // Returns array of all non-empty square numbers
+  filled = []
+  for (let i = 0; i < 25; i++) {
+    if ($(`#sq-${i}`).text() != "●") filled.push(i)
+  }
+  return filled
+}
+
+const set_clue_text = () => {
+  // Update clue text to reflect active word
+  clue_number = orient == 0 ? active_square[0] : active_square[1]
+  $(`#clue`).text(clues[orient][clue_number])
+}
+
+const shake_board = () => {
+  // Shake the game board when checking for correct answers
+  let board = document.querySelector('#board');
+  board.animate([
+      { transform: 'translate(3px, 0px)' },
+      { transform: 'translate(-6px, 0px)'},
+      { transform: 'translate(6px, 0px)' },
+      { transform: 'translate(-6px, 0px)'},
+      { transform: 'translate(6px, 0px)' },
+      { transform: 'translate(-3px, 0px)'},
+    ], { duration: 300 });
+}
+
+
+const move_with_keys = e => {
+  // Use event keycodes to trigger board changes
+  if(e.keyCode == 37) move_left()
+  if(e.keyCode == 38) move_up()
+  if(e.keyCode == 39) move_right()
+  if(e.keyCode == 40) move_down()
+  if(e.keyCode == 8)  delete_letter() // backspace
+  if(e.keyCode == 13) enter_key()     // enter
+  if(e.keyCode == 32) rotate_orient() // space
+}
+
+const get_current_answers = () => {
+  // Return string of all user answers (including blanks)
+  string = ''
+  for (let i = 0; i < 25; i++) {
+    string += ($(`#sq-${i}`).text())
+  }
+  return string
+}
+
+const check_answer = () => {
+
+  if (get_current_answers() == solution){
+      $(`.square`).css('color','green').css('font-weight','bold')
+  }
+}
+
+const move_triangles = () => {
+  sqaure_size = Math.min(.25 * window.innerWidth, 160)
+  color = get_current_answers() == solution ? 'green' : 'gold'
+  if (orient == 0){
+    $('#tri-left').css('border-right','11px solid transparent')
+    $('#tri-right').css('border-left','11px solid transparent')
+    $('#tri-up').css('border-bottom','11px solid ' + color)
+    $('#tri-down').css('border-top','11px solid ' + color)
+    $('#tri-col').css('margin-left',`${sqaure_size*(active_square[0]-2)}px`)
+  } else {
+    $('#tri-up').css('border-bottom','11px solid transparent')
+    $('#tri-down').css('border-top','11px solid transparent')
+    $('#tri-left').css('border-right','11px solid ' + color)
+    $('#tri-right').css('border-left','11px solid ' + color)
+    $('#tri-row').css('margin-top',`${sqaure_size*(active_square[1]-2)}px`)
+  }
+}
+
+>>>>>>> f3642421974a4179178886e437661afa632eaf16
 /////////////////////////////////////
 /////////////////////////////////////
 /////////////////////////////////////
 
 const move_to_next_square = () => {
+<<<<<<< HEAD
   orient == 0 ? move_down() : move_right()
+=======
+  if (orient == 1){
+  	if (active_square[0] == 4) { move_down(); move_to_word_start(); }
+  	else { move_right(); }
+  } else if (orient == 0){
+  	if (active_square[1] == 4) { move_right(); move_to_word_start(); }
+  	else { move_down(); }
+  }
+  if (is_sq_filled(active_sq_num()) && get_filled_sqaures().length < 25){
+    move_to_next_square()
+  }
+>>>>>>> f3642421974a4179178886e437661afa632eaf16
 }
 
 const set_letter = letter => {
   if (locked.substring(active_sq_num(), active_sq_num()+1) == '●'){
     $(`#sq-${active_sq_num()}`).text(letter).css('color','black')
   }
+<<<<<<< HEAD
   if (active_square[(1+orient)%2] != 4) move_to_next_square()
+=======
+  move_to_next_square()
+>>>>>>> f3642421974a4179178886e437661afa632eaf16
   update()
 }
 
